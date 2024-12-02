@@ -44,7 +44,7 @@ where
     fn split_by<B: FromIterator<T>>(self, separator: u8) -> B {
         BufReader::new(self)
             .split(separator)
-            .flatten()
+            .map_while(Result::ok)
             .flat_map(String::from_utf8)
             .flat_map(|s| s.parse())
             .collect()
@@ -57,7 +57,7 @@ where
     fn split_lines<B: FromIterator<T>>(self) -> B {
         BufReader::new(self)
             .lines()
-            .flatten()
+            .map_while(Result::ok)
             .flat_map(|l| l.parse())
             .collect()
     }
@@ -65,7 +65,7 @@ where
     fn split_groups<B: FromIterator<T>>(self) -> B {
         BufReader::new(self)
             .lines()
-            .flatten()
+            .map_while(Result::ok)
             .collect::<Vec<_>>()
             .split(|l| l.is_empty())
             .flat_map(|e| e.join("\n").parse())
