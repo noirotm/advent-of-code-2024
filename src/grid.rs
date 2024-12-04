@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fmt::{Display, Error, Formatter};
 use std::io::{BufRead, BufReader, Read};
-use std::iter::{repeat, FromIterator};
 use std::str::FromStr;
 
 #[derive(Clone, Debug)]
@@ -18,18 +17,16 @@ impl<T> Grid<T> {
     where
         T: Clone + Default,
     {
-        Self::new_with(w, h, Default::default())
+        let cells = vec![Default::default(); w * h];
+        Self { cells, w, h }
     }
 
     pub fn new_with(w: usize, h: usize, val: T) -> Self
     where
         T: Clone,
     {
-        Self {
-            cells: Vec::from_iter(repeat(val).take(w * h)),
-            w,
-            h,
-        }
+        let cells = vec![val; w * h];
+        Self { cells, w, h }
     }
 
     pub fn from_reader_callback<R, F, E>(r: R, f: F) -> Result<Self, E>
