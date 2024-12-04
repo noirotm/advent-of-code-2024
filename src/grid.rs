@@ -260,6 +260,20 @@ pub trait Coord {
     fn coords(&self) -> (usize, usize) {
         (self.x(), self.y())
     }
+
+    fn add_offset(&self, other: (isize, isize)) -> (usize, usize) {
+        (
+            (self.x() as isize + other.0) as usize,
+            (self.y() as isize + other.1) as usize,
+        )
+    }
+
+    fn diff(&self, other: &impl Coord) -> (isize, isize) {
+        (
+            self.x() as isize - other.x() as isize,
+            self.y() as isize - other.y() as isize,
+        )
+    }
 }
 
 #[derive(Debug, Default, Eq, Hash, PartialEq)]
@@ -366,15 +380,11 @@ impl<'a, T> Iterator for IterWithCoords<'a, T> {
     fn next(&mut self) -> Option<Self::Item> {
         let item = ((self.x, self.y), self.grid.get((self.x, self.y))?);
 
+        self.x += 1;
         if self.x == self.grid.w {
             self.x = 0;
             self.y += 1;
         }
-        if self.y == self.grid.h {
-            return None;
-        }
-
-        self.x += 1;
 
         Some(item)
     }
