@@ -1,7 +1,7 @@
 use humantime::format_duration;
 use std::fmt::{Display, Formatter};
 use std::fs::File;
-use std::io::Read;
+use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::time::{Duration, Instant};
 
@@ -48,13 +48,13 @@ pub trait Solver {
     type Output1: Display;
     type Output2: Display;
 
-    fn parse_input<R: Read>(&self, r: R) -> anyhow::Result<Self::Input>;
+    fn parse_input<R: BufRead>(&self, r: R) -> anyhow::Result<Self::Input>;
     fn solve_first(&self, input: &Self::Input) -> Self::Output1;
     fn solve_second(&self, input: &Self::Input) -> Self::Output2;
 
     fn load_input<P: AsRef<Path>>(&self, p: P) -> anyhow::Result<Self::Input> {
         let f = File::open(p)?;
-        self.parse_input(f)
+        self.parse_input(BufReader::new(f))
     }
 
     fn solve(&self, day: u32) -> ProblemOutput {

@@ -1,6 +1,6 @@
 use crate::grid::{Coord, Grid};
 use crate::solver::Solver;
-use std::io::Read;
+use std::io::BufRead;
 
 pub struct Problem;
 
@@ -9,7 +9,7 @@ impl Solver for Problem {
     type Output1 = usize;
     type Output2 = usize;
 
-    fn parse_input<R: Read>(&self, r: R) -> anyhow::Result<Self::Input> {
+    fn parse_input<R: BufRead>(&self, r: R) -> anyhow::Result<Self::Input> {
         Ok(Grid::from_reader(r)?)
     }
 

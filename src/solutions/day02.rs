@@ -1,7 +1,7 @@
-use crate::parsing::{ReadExt, WhitespaceSeparatedList};
+use crate::parsing::WhitespaceSeparatedList;
 use crate::solver::Solver;
 use itertools::Itertools;
-use std::io::{BufRead, BufReader, Read};
+use std::io::BufRead;
 use std::str::FromStr;
 
 pub struct Problem;
@@ -11,9 +11,8 @@ impl Solver for Problem {
     type Output1 = usize;
     type Output2 = usize;
 
-    fn parse_input<R: Read>(&self, r: R) -> anyhow::Result<Self::Input> {
-        Ok(BufReader::new(r)
-            .lines()
+    fn parse_input<R: BufRead>(&self, r: R) -> anyhow::Result<Self::Input> {
+        Ok(r.lines()
             .map_while(Result::ok)
             .flat_map(|l| WhitespaceSeparatedList::from_str(&l))
             .map(|l| l.into())

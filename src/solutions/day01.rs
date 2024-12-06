@@ -1,9 +1,9 @@
-use crate::parsing::ReadExt;
+use crate::parsing::BufReadExt;
 use crate::solver::Solver;
 use itertools::Itertools;
 use sscanf::sscanf;
 use std::collections::HashMap;
-use std::io::Read;
+use std::io::BufRead;
 use std::str::FromStr;
 
 pub struct Problem;
@@ -27,7 +27,7 @@ impl Solver for Problem {
     type Output1 = u32;
     type Output2 = u32;
 
-    fn parse_input<R: Read>(&self, r: R) -> anyhow::Result<Self::Input> {
+    fn parse_input<R: BufRead>(&self, r: R) -> anyhow::Result<Self::Input> {
         Ok(r.split_lines())
     }
 

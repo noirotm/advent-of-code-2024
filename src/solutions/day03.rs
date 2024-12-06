@@ -1,6 +1,7 @@
+use crate::parsing::ReadAll;
 use crate::solver::Solver;
 use regex::RegexBuilder;
-use std::io::Read;
+use std::io::BufRead;
 
 pub struct Problem;
 
@@ -9,10 +10,8 @@ impl Solver for Problem {
     type Output1 = u64;
     type Output2 = u64;
 
-    fn parse_input<R: Read>(&self, mut r: R) -> anyhow::Result<Self::Input> {
-        let mut s = String::new();
-        r.read_to_string(&mut s)?;
-        Ok(s)
+    fn parse_input<R: BufRead>(&self, r: R) -> anyhow::Result<Self::Input> {
+        Ok(r.read_all())
     }
 
     fn solve_first(&self, input: &Self::Input) -> Self::Output1 {

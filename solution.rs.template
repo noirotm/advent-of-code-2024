@@ -1,5 +1,5 @@
 use crate::solver::Solver;
-use std::io::Read;
+use std::io::BufRead;
 
 pub struct Problem;
 
@@ -8,7 +8,7 @@ impl Solver for Problem {
     type Output1 = u64;
     type Output2 = u64;
 
-    fn parse_input<R: Read>(&self, r: R) -> anyhow::Result<Self::Input> {
+    fn parse_input<R: BufRead>(&self, r: R) -> anyhow::Result<Self::Input> {
         todo!()
     }
 

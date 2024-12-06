@@ -1,4 +1,4 @@
-use std::io::{BufRead, BufReader, Read};
+use std::io::BufRead;
 use std::str::FromStr;
 
 pub struct WhitespaceSeparatedList<T>(Vec<T>);
@@ -29,21 +29,20 @@ where
     }
 }
 
-pub trait ReadExt<T> {
+pub trait BufReadExt<T> {
     fn split_by<B: FromIterator<T>>(self, separator: u8) -> B;
     fn split_commas<B: FromIterator<T>>(self) -> B;
     fn split_lines<B: FromIterator<T>>(self) -> B;
     fn split_groups<B: FromIterator<T>>(self) -> B;
 }
 
-impl<R, T> ReadExt<T> for R
+impl<R, T> BufReadExt<T> for R
 where
-    R: Read,
+    R: BufRead,
     T: FromStr,
 {
     fn split_by<B: FromIterator<T>>(self, separator: u8) -> B {
-        BufReader::new(self)
-            .split(separator)
+        self.split(separator)
             .map_while(Result::ok)
             .flat_map(String::from_utf8)
             .flat_map(|s| s.parse())
@@ -55,20 +54,33 @@ where
     }
 
     fn split_lines<B: FromIterator<T>>(self) -> B {
-        BufReader::new(self)
-            .lines()
+        self.lines()
             .map_while(Result::ok)
             .flat_map(|l| l.parse())
             .collect()
     }
 
     fn split_groups<B: FromIterator<T>>(self) -> B {
-        BufReader::new(self)
-            .lines()
+        self.lines()
             .map_while(Result::ok)
             .collect::<Vec<_>>()
             .split(|l| l.is_empty())
             .flat_map(|e| e.join("\n").parse())
             .collect()
+    }
+}
+
+pub trait ReadAll {
+    fn read_all(self) -> String;
+}
+
+impl<R> ReadAll for R
+where
+    R: BufRead,
+{
+    fn read_all(mut self) -> String {
+        let mut s = String::new();
+        let _ = self.read_to_string(&mut s).unwrap_or_default();
+        s
     }
 }
