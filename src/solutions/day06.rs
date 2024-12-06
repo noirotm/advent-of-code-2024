@@ -73,7 +73,6 @@ impl Solver for Problem {
             .iter_with_coords()
             .find_map(|(c, v)| (*v == Entry::Guard).then_some(c))
             .unwrap();
-        grid.get_mut(start).replace(&mut Entry::Empty);
 
         Ok(Lab { grid, start })
     }
@@ -111,7 +110,7 @@ fn find_all_visited(input: &Lab) -> FnvHashSet<(usize, usize)> {
     let mut visited = FnvHashSet::default();
     let mut vec = Vector::new(input.start);
 
-    while let Some(v) = input.grid.get(vec.pos) {
+    while input.grid.contains_coord(&vec.pos) {
         visited.insert(vec.pos);
 
         while input
@@ -132,7 +131,7 @@ fn are_we_looping(input: &Lab) -> bool {
     let mut visited = FnvHashSet::default();
     let mut vec = Vector::new(input.start);
 
-    while let Some(v) = input.grid.get(vec.pos) {
+    while input.grid.contains_coord(&vec.pos) {
         if visited.contains(&vec) {
             return true;
         }
