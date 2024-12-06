@@ -2,6 +2,7 @@ use crate::grid::{Coord, Grid};
 use crate::solver::Solver;
 use anyhow::anyhow;
 use fnv::FnvHashSet;
+use rayon::prelude::*;
 use std::io::BufRead;
 
 pub struct Problem;
@@ -83,7 +84,6 @@ impl Solver for Problem {
 
     fn solve_second(&self, input: &Self::Input) -> Self::Output2 {
         let mut initial_visited = find_all_visited(input);
-        //let mut initial_visited = FnvHashSet::from_iter([(3, 6)]);
 
         // ignore the starting position
         initial_visited.remove(&input.start);
@@ -91,7 +91,7 @@ impl Solver for Problem {
         // for each point initially visited, we try inserting a wall and try to detect a loop
         // aka whether we find a vector that we already visited
         initial_visited
-            .iter()
+            .par_iter()
             .filter(|p| {
                 let mut lab = Lab {
                     grid: input.grid.clone(),
