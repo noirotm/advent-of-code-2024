@@ -251,12 +251,11 @@ where
     }
 }
 
+#[allow(unused)]
 pub trait Coord {
     fn x(&self) -> usize;
     fn y(&self) -> usize;
-    fn coords(&self) -> (usize, usize) {
-        (self.x(), self.y())
-    }
+    fn coords(&self) -> (usize, usize);
 
     fn add_offset(&self, other: (isize, isize)) -> (usize, usize) {
         (
@@ -287,6 +286,10 @@ impl Coord for GridPoint {
     fn y(&self) -> usize {
         self.y
     }
+
+    fn coords(&self) -> (usize, usize) {
+        (self.x(), self.y())
+    }
 }
 
 impl Coord for &GridPoint {
@@ -296,6 +299,10 @@ impl Coord for &GridPoint {
 
     fn y(&self) -> usize {
         self.y
+    }
+
+    fn coords(&self) -> (usize, usize) {
+        (self.x(), self.y())
     }
 }
 
@@ -342,6 +349,7 @@ pub struct ColIter<'a, T> {
 impl<'a, T> Iterator for ColIter<'a, T> {
     type Item = &'a T;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let val = self.grid.get((self.col, self.pos))?;
         self.pos += 1;
@@ -358,6 +366,7 @@ pub struct RowIter<'a, T> {
 impl<'a, T> Iterator for RowIter<'a, T> {
     type Item = &'a T;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let val = self.grid.get((self.pos, self.row))?;
         self.pos += 1;
@@ -374,6 +383,7 @@ pub struct IterWithCoords<'a, T> {
 impl<'a, T> Iterator for IterWithCoords<'a, T> {
     type Item = ((usize, usize), &'a T);
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let item = ((self.x, self.y), self.grid.get((self.x, self.y))?);
 
