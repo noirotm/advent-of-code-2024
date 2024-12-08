@@ -68,7 +68,7 @@ impl Solver for Problem {
     type Output2 = usize;
 
     fn parse_input<R: BufRead>(&self, r: R) -> anyhow::Result<Self::Input> {
-        let mut grid = Grid::from_reader(r)?;
+        let grid = Grid::from_reader(r)?;
         let start = grid
             .iter_with_coords()
             .find_map(|(c, v)| (*v == Entry::Guard).then_some(c))
