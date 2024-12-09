@@ -1,5 +1,6 @@
 use crate::parsing::BufReadExt;
 use crate::solver::Solver;
+use rayon::prelude::*;
 use sscanf::sscanf;
 use std::fmt::{Display, Formatter};
 use std::io::BufRead;
@@ -94,16 +95,13 @@ impl Solver for Problem {
             .max()
             .unwrap();
 
-        println!("1");
-
         // generate all configs
         let op_cmbs = generate_op_combinations_with_concat(max_ops);
-
-        println!("2");
+        println!("{:?}", op_cmbs.len());
 
         // test all equations
         input
-            .iter()
+            .par_iter()
             .filter(|eq| is_equation_possible(eq, &op_cmbs))
             .map(|eq| eq.total)
             .sum()
@@ -153,11 +151,17 @@ fn generate_op_combinations_with_concat(n: usize) -> Vec<Vec<Op>> {
 fn is_equation_possible(eq: &Equation, operations: &[Vec<Op>]) -> bool {
     operations
         .iter()
-        .any(|op| compute_equation(&eq.terms, op) == eq.total)
+        .any(|op| compute_equation_unless_exceeds(eq, op).is_some_and(|n| n == eq.total))
 }
 
-fn compute_equation(terms: &[u64], operations: &[Op]) -> u64 {
-    zip(terms.iter().skip(1), operations.iter())
-        //.inspect(|n| _ = dbg!(n))
-        .fold(terms[0], |acc, (&n, op)| op.apply(acc, n))
+fn compute_equation_unless_exceeds(eq: &Equation, operations: &[Op]) -> Option<u64> {
+    let mut result = eq.terms[0];
+    for (n, op) in zip(eq.terms.iter().skip(1), operations.iter()) {
+        result = op.apply(result, *n);
+        if result > eq.total {
+            return None;
+        }
+    }
+
+    Some(result)
 }
