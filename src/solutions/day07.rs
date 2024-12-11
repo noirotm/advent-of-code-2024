@@ -97,7 +97,7 @@ impl Solver for Problem {
 
         // generate all configs
         let op_cmbs = generate_op_combinations_with_concat(max_ops);
-        println!("{:?}", op_cmbs.len());
+        //println!("{:?}", op_cmbs.len());
 
         // test all equations
         input
